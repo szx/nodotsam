@@ -1,0 +1,15 @@
+[package]
+name = "nodotsam"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reqwest = { version = "0.11.23", features = ["blocking"] }
+url = "2.5.0"
+serde = { version = "1.0.195", features = ["derive"] }
+serde_json = "1.0.111"
+thiserror = "1.0.56"
+
+[dev-dependencies]
+webbrowser = "0.8.12"
+dialog = "0.3.0"
