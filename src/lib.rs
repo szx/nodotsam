@@ -41,17 +41,18 @@ impl MastodonClient {
         })
     }
 
-    fn verify_authorize(&self) -> Result<(), MastodonClientError> {
+    fn verify_credentials(&self) -> Result<VerifyCredentialsResponse, MastodonClientError> {
         let client = reqwest::blocking::Client::builder()
             .user_agent(&self.user_agent)
             .build()?;
 
-        let _response = client
+        let response = client
             .get(r#"https://fedi.sszczyrb.dev/api/v1/accounts/verify_credentials"#)
             .bearer_auth(&self.access_token)
-            .send()?;
-        // TODO: Return parsed response.
-        Ok(())
+            .send()?
+            .text()?;
+
+        Ok(serde_json::from_str(&response)?)
     }
 
     fn login(
@@ -147,6 +148,56 @@ impl MastodonClient {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct VerifyCredentialsResponse {
+    id: String,
+    username: String,
+    acct: String,
+    display_name: String,
+    locked: bool,
+    discoverable: bool,
+    bot: bool,
+    created_at: String,
+    note: String,
+    url: String,
+    avatar: String,
+    avatar_static: String,
+    header: String,
+    header_static: String,
+    followers_count: u32,
+    following_count: u32,
+    statuses_count: u32,
+    last_status_at: String,
+    source: CredentialsSource,
+    emojis: Vec<AccountEmoji>,
+    fields: Vec<AccountField>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct CredentialsSource {
+    privacy: String,
+    sensitive: bool,
+    language: String,
+    note: String,
+    fields: Vec<AccountField>,
+    follow_requests_count: u32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct AccountField {
+    name: String,
+    value: String,
+    verified_at: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct AccountEmoji {
+    shortcode: String,
+    url: String,
+    static_url: String,
+    visible_in_picker: String,
+}
+
 #[derive(Error, Debug)]
 pub enum MastodonClientError {
     #[error("failed request")]
@@ -191,7 +242,7 @@ mod tests {
         )
         .unwrap();
 
-        mastodon_client.verify_authorize().unwrap();
+        mastodon_client.verify_credentials().unwrap();
         // TODO: /api/v1/timelines/home
     }
 }
