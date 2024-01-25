@@ -5,6 +5,7 @@ use thiserror::Error;
 const REDIRECT_URI: &str = "urn:ietf:wg:oauth:2.0:oob";
 const SCOPES: &str = "read write follow";
 
+#[derive(Debug)]
 pub struct MastodonClient {
     base_url: String,
     user_agent: String,
