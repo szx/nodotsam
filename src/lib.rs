@@ -41,7 +41,7 @@ impl MastodonClient {
         })
     }
 
-    fn home_timeline(&self) -> Result<HomeTimeline, MastodonClientError> {
+    pub fn home_timeline(&self) -> Result<HomeTimeline, MastodonClientError> {
         let client = reqwest::blocking::Client::builder()
             .user_agent(&self.user_agent)
             .build()?;
@@ -55,7 +55,7 @@ impl MastodonClient {
         Ok(serde_json::from_str(&response)?)
     }
 
-    fn verify_credentials(&self) -> Result<Account, MastodonClientError> {
+    pub fn verify_credentials(&self) -> Result<Account, MastodonClientError> {
         let client = reqwest::blocking::Client::builder()
             .user_agent(&self.user_agent)
             .build()?;
@@ -167,320 +167,320 @@ impl MastodonClient {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(transparent)]
-struct HomeTimeline {
-    emojis: Vec<Status>,
+pub struct HomeTimeline {
+    pub statuses: Vec<Status>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Status {
+pub struct Status {
     /// ID of the status in the database.
-    id: String,
+    pub id: String,
     /// URI of the status used for federation.
-    uri: String,
+    pub uri: String,
     /// The date when this status was created.
-    created_at: String,
+    pub created_at: String,
     /// The account that authored this status.
-    account: Account,
+    pub account: Account,
     /// HTML-encoded status content.
-    content: String,
+    pub content: String,
     /// Visibility of this status.
-    visibility: String,
+    pub visibility: String,
     /// Is this status marked as sensitive content?
-    sensitive: bool,
+    pub sensitive: bool,
     /// Subject or summary line, below which status content is collapsed until expanded.
-    spoiler_text: String,
+    pub spoiler_text: String,
     /// Media that is attached to this status.
-    media_attachments: Vec<MediaAttachment>,
+    pub media_attachments: Vec<MediaAttachment>,
     /// The application used to post this status.
-    application: Option<Application>,
+    pub application: Option<Application>,
     /// Mentions of users within the status content.
-    mentions: Vec<StatusMention>,
+    pub mentions: Vec<StatusMention>,
     /// Hashtags used within the status content
-    tags: Vec<StatusTag>,
+    pub tags: Vec<StatusTag>,
     /// Custom emoji to be used when rendering status content.
-    emojis: Vec<CustomEmoji>,
+    pub emojis: Vec<CustomEmoji>,
     /// How many boosts this status has received.
-    reblogs_count: u32,
+    pub reblogs_count: u32,
     /// How many favourites this status has received.
-    favourites_count: u32,
+    pub favourites_count: u32,
     /// How many replies this status has received.
-    replies_count: u32,
+    pub replies_count: u32,
     /// A link to the status’s HTML representation.
-    url: Option<String>,
+    pub url: Option<String>,
     /// ID of the status being replied to.
-    in_reply_to_id: Option<String>,
+    pub in_reply_to_id: Option<String>,
     /// ID of the account that authored the status being replied to.
-    in_reply_to_account_id: Option<String>,
+    pub in_reply_to_account_id: Option<String>,
     /// The status being reblogged.
-    reblog: Option<Box<Status>>,
+    pub reblog: Option<Box<Status>>,
     /// The poll attached to the status.
-    poll: Option<Poll>,
+    pub poll: Option<Poll>,
     /// Preview card for links included within status content.
-    card: Option<PreviewCard>,
+    pub card: Option<PreviewCard>,
     /// Primary language of this status.
-    language: Option<String>,
+    pub language: Option<String>,
     /// Plain-text source of a status. Returned instead of content when status is deleted, so the user may redraft from
     /// the source text without the client having to reverse-engineer the original text from the HTML content.
-    text: Option<String>,
+    pub text: Option<String>,
     /// Timestamp of when the status was last edited.
-    edited_at: Option<String>,
+    pub edited_at: Option<String>,
     /// If the current token has an authorized user: Have you favourited this status?
-    favourited: Option<bool>,
+    pub favourited: Option<bool>,
     /// If the current token has an authorized user: Have you boosted this status?
-    reblogged: Option<bool>,
+    pub reblogged: Option<bool>,
     /// If the current token has an authorized user: Have you muted notifications for this status’s conversation?
-    muted: Option<bool>,
+    pub muted: Option<bool>,
     /// If the current token has an authorized user: Have you bookmarked this status?
-    bookmarked: Option<bool>,
+    pub bookmarked: Option<bool>,
     /// If the current token has an authorized user: Have you pinned this status? Only appears if the status is pinnable.
-    pinned: Option<bool>,
+    pub pinned: Option<bool>,
     /// If the current token has an authorized user: The filter and keywords that matched this status.
-    filtered: Option<FilterResult>,
+    pub filtered: Option<FilterResult>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct FilterResult {
+pub struct FilterResult {
     /// The filter that was matched
-    filter: Filter,
+    pub filter: Filter,
     /// The keyword within the filter that was matched.
-    keyword_matches: Option<Vec<String>>,
+    pub keyword_matches: Option<Vec<String>>,
     /// The status ID within the filter that was matched.
-    status_matches: Option<Vec<String>>,
+    pub status_matches: Option<Vec<String>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Filter {
+pub struct Filter {
     /// The ID of the Filter in the database.
-    id: String,
+    pub id: String,
     /// A title given by the user to name the filter.
-    title: String,
+    pub title: String,
     /// The contexts in which the filter should be applied.
-    context: Vec<String>,
+    pub context: Vec<String>,
     /// When the filter should no longer be applied.
-    expires_at: Option<String>,
+    pub expires_at: Option<String>,
     /// The action to be taken when a status matches this filter.
-    filter_action: String,
+    pub filter_action: String,
     /// The keywords grouped under this filter.
-    keywords: Vec<FilterKeyword>,
+    pub keywords: Vec<FilterKeyword>,
     /// The statuses grouped under this filter.
-    statuses: Vec<FilterStatus>,
+    pub statuses: Vec<FilterStatus>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct FilterStatus {
+pub struct FilterStatus {
     /// The ID of the FilterStatus in the database.
-    id: String,
+    pub id: String,
     /// The ID of the Status that will be filtered.
-    status_id: String,
+    pub status_id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct FilterKeyword {
+pub struct FilterKeyword {
     /// The ID of the FilterKeyword in the database.
-    id: String,
+    pub id: String,
     /// The phrase to be matched against.
-    keyword: String,
+    pub keyword: String,
     /// Should the filter consider word boundaries?
-    whole_word: bool,
+    pub whole_word: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Poll {
+pub struct Poll {
     /// The ID of the poll in the database.
-    id: String,
+    pub id: String,
     /// When the poll ends.
-    expires_at: Option<String>,
+    pub expires_at: Option<String>,
     /// Is the poll currently expired?
-    expired: bool,
+    pub expired: bool,
     /// Does the poll allow multiple-choice answers?
-    multiple: bool,
+    pub multiple: bool,
     /// How many votes have been received.
-    votes_count: u32,
+    pub votes_count: u32,
     /// How many unique accounts have voted on a multiple-choice poll.
-    voters_count: Option<u32>,
+    pub voters_count: Option<u32>,
     /// Possible answers for the pool.
-    options: Vec<PollOption>,
+    pub options: Vec<PollOption>,
     /// Custom emoji to be used for rendering poll options.
-    emojis: Vec<CustomEmoji>,
+    pub emojis: Vec<CustomEmoji>,
     /// When called with a user token, has the authorized user voted?
-    voted: Option<bool>,
+    pub voted: Option<bool>,
     /// Possible answers for the pool.
-    own_votes: Option<Vec<u32>>,
+    pub own_votes: Option<Vec<u32>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct PollOption {
+pub struct PollOption {
     /// The text value of the poll option.
-    title: String,
+    pub title: String,
     /// The total number of received votes for this option.
-    votes_count: Option<u32>,
+    pub votes_count: Option<u32>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct CustomEmoji {
+pub struct CustomEmoji {
     /// The name of the custom emoji.
-    shortcode: String,
+    pub shortcode: String,
     /// A link to the custom emoji.
-    url: String,
+    pub url: String,
     /// A link to a static copy of the custom emoji.
-    static_url: String,
+    pub static_url: String,
     /// Whether this Emoji should be visible in the picker or unlisted.
-    visible_in_picker: bool,
+    pub visible_in_picker: bool,
     /// Used for sorting custom emoji in the picker.
-    category: Option<String>,
+    pub category: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct PreviewCard {
+pub struct PreviewCard {
     /// Location of linked resource.
-    url: String,
+    pub url: String,
     /// Title of linked resource.
-    title: String,
+    pub title: String,
     /// Description of preview.
-    description: String,
+    pub description: String,
     /// The type of the attachment.
     #[serde(rename = "type")]
-    kind: String,
+    pub kind: String,
     /// The author of the original resource.
-    author_name: String,
+    pub author_name: String,
     /// A link to the author of the original resource.
-    author_url: String,
+    pub author_url: String,
     /// The provider of the original resource.
-    provider_name: String,
+    pub provider_name: String,
     /// A link to the provider of the original resource.
-    provider_url: String,
+    pub provider_url: String,
     /// HTML to be used for generating the preview card.
-    html: String,
+    pub html: String,
     /// Width of preview, in pixels.
-    width: u32,
+    pub width: u32,
     /// Height of preview, in pixels.
-    height: u32,
+    pub height: u32,
     /// Preview thumbnail.
-    image: Option<String>,
+    pub image: Option<String>,
     /// Used for photo embeds, instead of custom html.
-    embed_url: String,
+    pub embed_url: String,
     /// A hash computed by the BlurHash algorithm, for generating colorful preview thumbnails when media has not been
     /// downloaded yet.
-    blurhash: String,
+    pub blurhash: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct MediaAttachment {
+pub struct MediaAttachment {
     /// The ID of the attachment in the database.
-    id: String,
+    pub id: String,
     /// The type of the attachment.
     #[serde(rename = "type")]
-    kind: String,
+    pub kind: String,
     /// The location of the original full-size attachment.
-    url: String,
+    pub url: String,
     /// The location of a scaled-down preview of the attachment.
-    preview_url: String,
+    pub preview_url: String,
     /// The location of the full-size original attachment on the remote website.
-    remote_url: Option<String>,
+    pub remote_url: Option<String>,
     /// Metadata returned by Paperclip.
-    meta: HashMap<String, serde_json::Value>,
+    pub meta: HashMap<String, serde_json::Value>,
     /// Alternate text that describes what is in the media attachment, to be used for the visually impaired or when
     /// media attachments do not load.
-    description: Option<String>,
+    pub description: Option<String>,
     /// A hash computed by the BlurHash algorithm, for generating colorful preview thumbnails when media has not been
     /// downloaded yet.
-    blurhash: String,
+    pub blurhash: String,
     /// A shorter URL for the attachment.
     #[deprecated]
-    text_url: Option<String>,
+    pub text_url: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct StatusTag {
+pub struct StatusTag {
     /// The value of the hashtag after the # sign.
-    name: String,
+    pub name: String,
     /// A link to the hashtag on the instance.
-    url: String,
+    pub url: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct StatusMention {
+pub struct StatusMention {
     /// The account ID of the mentioned user.
-    id: String,
+    pub id: String,
     /// The username of the mentioned user.
-    username: String,
+    pub username: String,
     /// The location of the mentioned user’s profile.
-    url: String,
+    pub url: String,
     /// The webfinger acct: URI of the mentioned user. Equivalent to username for local users, or username@domain for
     /// remote users.
-    acct: String,
+    pub acct: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Application {
-    name: String,
-    website: String,
+pub struct Application {
+    pub name: String,
+    pub website: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Account {
-    id: String,
-    username: String,
-    acct: String,
-    display_name: String,
-    locked: bool,
-    discoverable: bool,
-    bot: bool,
-    created_at: String,
-    note: String,
-    url: String,
-    avatar: String,
-    avatar_static: String,
-    header: String,
-    header_static: String,
-    followers_count: u32,
-    following_count: u32,
-    statuses_count: u32,
-    last_status_at: String,
-    source: Option<CredentialsSource>,
-    role: Option<Role>,
-    emojis: Vec<AccountEmoji>,
-    fields: Vec<AccountField>,
+pub struct Account {
+    pub id: String,
+    pub username: String,
+    pub acct: String,
+    pub display_name: String,
+    pub locked: bool,
+    pub discoverable: bool,
+    pub bot: bool,
+    pub created_at: String,
+    pub note: String,
+    pub url: String,
+    pub avatar: String,
+    pub avatar_static: String,
+    pub header: String,
+    pub header_static: String,
+    pub followers_count: u32,
+    pub following_count: u32,
+    pub statuses_count: u32,
+    pub last_status_at: String,
+    pub source: Option<CredentialsSource>,
+    pub role: Option<Role>,
+    pub emojis: Vec<AccountEmoji>,
+    pub fields: Vec<AccountField>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Role {
+pub struct Role {
     /// The ID of the Role in the database.
-    id: Option<u32>,
+    pub id: Option<u32>,
     /// The name of the role.
-    name: String,
+    pub name: String,
     /// The hex code assigned to this role. If no hex code is assigned, the string will be empty.
-    color: Option<String>,
+    pub color: Option<String>,
     /// A bitmask that represents the sum of all permissions granted to the role.
-    permissions: Option<u32>,
+    pub permissions: Option<u32>,
     /// Whether the role is publicly visible as a badge on user profiles.
     #[serde(default)]
-    highlighted: bool,
+    pub highlighted: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct CredentialsSource {
-    privacy: String,
-    sensitive: bool,
-    language: String,
-    note: String,
-    fields: Vec<AccountField>,
-    follow_requests_count: u32,
+pub struct CredentialsSource {
+    pub privacy: String,
+    pub sensitive: bool,
+    pub language: String,
+    pub note: String,
+    pub fields: Vec<AccountField>,
+    pub follow_requests_count: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct AccountField {
-    name: String,
-    value: String,
-    verified_at: Option<String>,
+pub struct AccountField {
+    pub name: String,
+    pub value: String,
+    pub verified_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct AccountEmoji {
-    shortcode: String,
-    url: String,
-    static_url: String,
-    visible_in_picker: bool,
+pub struct AccountEmoji {
+    pub shortcode: String,
+    pub url: String,
+    pub static_url: String,
+    pub visible_in_picker: bool,
 }
 
 #[derive(Error, Debug)]
