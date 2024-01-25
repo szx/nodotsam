@@ -8,6 +8,9 @@ const SCOPES: &str = "read write follow";
 pub struct MastodonClient {
     base_url: String,
     user_agent: String,
+    client_name: String,
+    website: String,
+
     access_token: String,
 }
 
@@ -17,28 +20,38 @@ impl MastodonClient {
     pub fn new(
         base_url: impl Into<String>,
         user_agent: impl Into<String>,
-        client_name: impl AsRef<str>,
-        website: impl AsRef<str>,
-        cached_access_token: Option<impl Into<String>>,
-        get_authorization_code_callback: GetAuthorizationCodeCallback,
-    ) -> Result<Self, MastodonClientError> {
+        client_name: impl Into<String>,
+        website: impl Into<String>,
+    ) -> Self {
         let base_url = base_url.into();
         let user_agent = user_agent.into();
-        let client_name = client_name.as_ref();
-        let website = website.as_ref();
-        let access_token = cached_access_token.map(|x| x.into()).unwrap_or(Self::login(
-            base_url.as_str(),
-            user_agent.as_str(),
-            client_name,
-            website,
-            get_authorization_code_callback,
-        )?);
+        let client_name = client_name.into();
+        let website = website.into();
 
-        Ok(Self {
+        Self {
             base_url,
             user_agent,
-            access_token,
-        })
+            client_name,
+            website,
+            access_token: "".to_string(),
+        }
+    }
+
+    pub fn authorize(
+        &mut self,
+        cached_access_token: Option<impl Into<String>>,
+        get_authorization_code_callback: GetAuthorizationCodeCallback,
+    ) -> Result<(), MastodonClientError> {
+        if self.access_token.is_empty() {
+            self.access_token = cached_access_token.map(|x| x.into()).unwrap_or(Self::login(
+                self.base_url.as_str(),
+                self.user_agent.as_str(),
+                self.client_name.as_str(),
+                self.website.as_str(),
+                get_authorization_code_callback,
+            )?);
+        }
+        Ok(())
     }
 
     pub fn home_timeline(&self) -> Result<HomeTimeline, MastodonClientError> {
@@ -507,25 +520,23 @@ mod tests {
         let client_name = "nodotsam";
         let website = r"https://github.com/szx/nodotsam";
 
-        let mastodon_client = MastodonClient::new(
-            base_url,
-            user_agent,
-            client_name,
-            website,
-            None::<String>,
-            Box::new(|login_url: &str| -> Result<String, MastodonClientError> {
-                webbrowser::open(login_url)
-                    .map_err(|err| MastodonClientError::AuthorizationCode(err.to_string()))?;
-                dialog::Input::new("authorization code")
-                    .title("authorization code")
-                    .show()
-                    .map_err(|err| MastodonClientError::AuthorizationCode(err.to_string()))?
-                    .ok_or(MastodonClientError::AuthorizationCode(
-                        "empty code".to_string(),
-                    ))
-            }),
-        )
-        .unwrap();
+        let mut mastodon_client = MastodonClient::new(base_url, user_agent, client_name, website);
+        mastodon_client
+            .authorize(
+                None::<String>,
+                Box::new(|login_url: &str| -> Result<String, MastodonClientError> {
+                    webbrowser::open(login_url)
+                        .map_err(|err| MastodonClientError::AuthorizationCode(err.to_string()))?;
+                    dialog::Input::new("authorization code")
+                        .title("authorization code")
+                        .show()
+                        .map_err(|err| MastodonClientError::AuthorizationCode(err.to_string()))?
+                        .ok_or(MastodonClientError::AuthorizationCode(
+                            "empty code".to_string(),
+                        ))
+                }),
+            )
+            .unwrap();
 
         mastodon_client.verify_credentials().unwrap();
         mastodon_client.home_timeline().unwrap();
