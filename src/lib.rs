@@ -7,12 +7,12 @@ const SCOPES: &str = "read write follow";
 
 #[derive(Debug)]
 pub struct MastodonClient {
-    base_url: String,
-    user_agent: String,
-    client_name: String,
-    website: String,
+    pub base_url: String,
+    pub user_agent: String,
+    pub client_name: String,
+    pub website: String,
 
-    access_token: String,
+    pub access_token: String,
 }
 
 pub type GetAuthorizationCodeCallback = Box<dyn FnMut(&str) -> Result<String, MastodonClientError>>;
@@ -538,6 +538,7 @@ mod tests {
                 }),
             )
             .unwrap();
+        assert_ne!(mastodon_client.access_token, "");
 
         mastodon_client.verify_credentials().unwrap();
         mastodon_client.home_timeline().unwrap();
