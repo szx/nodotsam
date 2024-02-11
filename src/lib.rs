@@ -44,13 +44,17 @@ impl MastodonClient {
         get_authorization_code_callback: GetAuthorizationCodeCallback,
     ) -> Result<(), MastodonClientError> {
         if self.access_token.is_empty() {
-            self.access_token = cached_access_token.map(|x| x.into()).unwrap_or(Self::login(
-                self.base_url.as_str(),
-                self.user_agent.as_str(),
-                self.client_name.as_str(),
-                self.website.as_str(),
-                get_authorization_code_callback,
-            )?);
+            self.access_token = cached_access_token
+                .map(|x| Ok(x.into()))
+                .unwrap_or_else(|| {
+                    Self::login(
+                        self.base_url.as_str(),
+                        self.user_agent.as_str(),
+                        self.client_name.as_str(),
+                        self.website.as_str(),
+                        get_authorization_code_callback,
+                    )
+                })?;
         }
         Ok(())
     }
@@ -161,8 +165,9 @@ impl MastodonClient {
                         ("code", authorization_code),
                         ("redirect_uri", REDIRECT_URI),
                     ]))
-                    .send();
-                Ok(serde_json::from_str(&response?.text()?)?)
+                    .send()?
+                    .text()?;
+                Ok(serde_json::from_str(&response)?)
             };
 
         let response = create_app()?;
@@ -524,7 +529,7 @@ mod tests {
         let mut mastodon_client = MastodonClient::new(base_url, user_agent, client_name, website);
         mastodon_client
             .authorize(
-                None::<String>,
+                std::env::var("NODOTSAM_TEST_ACCESS_TOKEN").ok(),
                 Box::new(|login_url: &str| -> Result<String, MastodonClientError> {
                     webbrowser::open(login_url)
                         .map_err(|err| MastodonClientError::AuthorizationCode(err.to_string()))?;
