@@ -1,13 +1,13 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(transparent)]
 pub struct HomeTimeline {
     pub statuses: Vec<Status>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Status {
     /// ID of the status in the database.
     pub id: String,
@@ -74,7 +74,7 @@ pub struct Status {
     pub filtered: Option<FilterResult>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FilterResult {
     /// The filter that was matched
     pub filter: Filter,
@@ -84,7 +84,7 @@ pub struct FilterResult {
     pub status_matches: Option<Vec<String>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Filter {
     /// The ID of the Filter in the database.
     pub id: String,
@@ -102,7 +102,7 @@ pub struct Filter {
     pub statuses: Vec<FilterStatus>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FilterStatus {
     /// The ID of the FilterStatus in the database.
     pub id: String,
@@ -110,7 +110,7 @@ pub struct FilterStatus {
     pub status_id: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FilterKeyword {
     /// The ID of the FilterKeyword in the database.
     pub id: String,
@@ -120,7 +120,7 @@ pub struct FilterKeyword {
     pub whole_word: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Poll {
     /// The ID of the poll in the database.
     pub id: String,
@@ -144,7 +144,7 @@ pub struct Poll {
     pub own_votes: Option<Vec<u32>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PollOption {
     /// The text value of the poll option.
     pub title: String,
@@ -152,7 +152,7 @@ pub struct PollOption {
     pub votes_count: Option<u32>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CustomEmoji {
     /// The name of the custom emoji.
     pub shortcode: String,
@@ -166,7 +166,7 @@ pub struct CustomEmoji {
     pub category: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PreviewCard {
     /// Location of linked resource.
     pub url: String,
@@ -200,7 +200,7 @@ pub struct PreviewCard {
     pub blurhash: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MediaAttachment {
     /// The ID of the attachment in the database.
     pub id: String,
@@ -226,7 +226,7 @@ pub struct MediaAttachment {
     pub text_url: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct StatusTag {
     /// The value of the hashtag after the # sign.
     pub name: String,
@@ -234,7 +234,7 @@ pub struct StatusTag {
     pub url: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct StatusMention {
     /// The account ID of the mentioned user.
     pub id: String,
@@ -247,13 +247,13 @@ pub struct StatusMention {
     pub acct: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Application {
     pub name: String,
     pub website: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Account {
     pub id: String,
     pub username: String,
@@ -279,7 +279,7 @@ pub struct Account {
     pub fields: Vec<AccountField>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Role {
     /// The ID of the Role in the database.
     pub id: Option<u32>,
@@ -294,7 +294,7 @@ pub struct Role {
     pub highlighted: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CredentialsSource {
     pub privacy: String,
     pub sensitive: bool,
@@ -304,14 +304,14 @@ pub struct CredentialsSource {
     pub follow_requests_count: u32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AccountField {
     pub name: String,
     pub value: String,
     pub verified_at: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AccountEmoji {
     pub shortcode: String,
     pub url: String,
@@ -319,7 +319,7 @@ pub struct AccountEmoji {
     pub visible_in_picker: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CreatedApp {
     pub id: String,
     pub name: String,
@@ -329,7 +329,7 @@ pub struct CreatedApp {
     pub client_secret: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RequestedAccessToken {
     pub access_token: String,
     pub created_at: u32,
