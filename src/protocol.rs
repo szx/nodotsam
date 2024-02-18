@@ -249,33 +249,61 @@ pub struct StatusMention {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Application {
+    /// The name of your application.
     pub name: String,
-    pub website: String,
+    /// The website associated with your application.
+    pub website: Option<String>,
+    /// Client ID key, to be used for obtaining OAuth tokens
+    pub client_id: Option<String>,
+    /// Client secret key, to be used for obtaining OAuth tokens
+    pub client_secret: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Account {
+    /// The account id.
     pub id: String,
+    /// The username of the account, not including domain.
     pub username: String,
+    /// The Webfinger account URI. Equal to username for local users, or username@domain for remote users.
     pub acct: String,
-    pub display_name: String,
-    pub locked: bool,
-    pub discoverable: bool,
-    pub bot: bool,
-    pub created_at: String,
-    pub note: String,
+    /// The location of the user’s profile page.
     pub url: String,
+    /// The profile’s display name.
+    pub display_name: String,
+    /// Whether the account manually approves follow requests.
+    pub locked: bool,
+    /// Whether the account has opted into discovery features such as the profile directory.
+    pub discoverable: Option<bool>,
+    /// Indicates that the account may perform automated actions, may not be monitored, or identifies as a robot.
+    pub bot: bool,
+    /// When the account was created. (ISO 8601 Datetime)
+    pub created_at: String,
+    /// The profile’s bio or description.
+    pub note: String,
+    /// An image icon that is shown next to statuses and in the profile.
     pub avatar: String,
+    /// A static version of the avatar. Equal to avatar if its value is a static image; different if avatar is an animated GIF.
     pub avatar_static: String,
+    /// An image banner that is shown above the profile and in profile cards.
     pub header: String,
+    /// A static version of the header. Equal to header if its value is a static image; different if header is an animated GIF.
     pub header_static: String,
+    /// The reported followers of this profile.
     pub followers_count: u32,
+    /// The reported follows of this profile.
     pub following_count: u32,
+    /// How many statuses are attached to this account.
     pub statuses_count: u32,
-    pub last_status_at: String,
+    /// When the most recent status was posted.
+    pub last_status_at: Option<String>,
+    /// An extra attribute that contains source values to be used with API methods that verify credentials and update credentials.
     pub source: Option<CredentialsSource>,
+    /// The role assigned to the currently authorized user.
     pub role: Option<Role>,
-    pub emojis: Vec<AccountEmoji>,
+    /// Custom emoji entities to be used when rendering the profile.
+    pub emojis: Vec<CustomEmoji>,
+    /// Additional metadata attached to a profile as name-value pairs.
     pub fields: Vec<AccountField>,
 }
 
@@ -296,43 +324,47 @@ pub struct Role {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CredentialsSource {
+    /// The default post privacy to be used for new statuses.
     pub privacy: String,
+    /// Whether new statuses should be marked sensitive by default.
     pub sensitive: bool,
+    ///  The default posting language for new statuses.
     pub language: String,
+    /// Profile bio, in plain-text instead of in HTML.
     pub note: String,
+    /// Metadata about the account.
     pub fields: Vec<AccountField>,
+    /// The number of pending follow requests.
     pub follow_requests_count: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AccountField {
+    /// The key of a given field’s key-value pair.
     pub name: String,
+    /// The value associated with the name key.
     pub value: String,
+    /// imestamp of when the server verified a URL value for a rel=“me” link.
     pub verified_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct AccountEmoji {
-    pub shortcode: String,
-    pub url: String,
-    pub static_url: String,
-    pub visible_in_picker: bool,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct CreatedApp {
+pub struct CreatedApplication {
     pub id: String,
-    pub name: String,
-    pub website: String,
     pub redirect_uri: String,
-    pub client_id: String,
-    pub client_secret: String,
+
+    #[serde(flatten)]
+    pub application: Application,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct RequestedAccessToken {
+pub struct Token {
+    /// An OAuth token to be used for authorization.
     pub access_token: String,
+    /// When the token was generated. (UNIX Timestamp)
     pub created_at: u32,
+    /// The OAuth scopes granted by this token, space-separated.
     pub scope: String,
+    /// The OAuth token type. Mastodon uses Bearer tokens.
     pub token_type: String,
 }

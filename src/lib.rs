@@ -99,7 +99,7 @@ impl MastodonClient {
         website: &str,
         mut get_authorization_code_callback: GetAuthorizationCodeCallback,
     ) -> Result<String, MastodonClientError> {
-        let create_app = || -> Result<protocol::CreatedApp, MastodonClientError> {
+        let create_app = || -> Result<protocol::CreatedApplication, MastodonClientError> {
             let url = format!(r"{}/api/v1/apps", base_url);
 
             let client = reqwest::blocking::Client::builder()
@@ -130,34 +130,39 @@ impl MastodonClient {
             )
         };
 
-        let request_access_token =
-            |client_id: &str,
-             client_secret: &str,
-             authorization_code: &str|
-             -> Result<protocol::RequestedAccessToken, MastodonClientError> {
-                let url = format!(r"{}/oauth/token", base_url);
+        let request_access_token = |client_id: &str,
+                                    client_secret: &str,
+                                    authorization_code: &str|
+         -> Result<protocol::Token, MastodonClientError> {
+            let url = format!(r"{}/oauth/token", base_url);
 
-                let client = reqwest::blocking::Client::builder()
-                    .user_agent(user_agent)
-                    .build()?;
-                let response = client
-                    .post(url)
-                    .form(&HashMap::from([
-                        ("grant_type", "authorization_code"),
-                        ("client_id", client_id),
-                        ("client_secret", client_secret),
-                        ("code", authorization_code),
-                        ("redirect_uri", REDIRECT_URI),
-                    ]))
-                    .send()?
-                    .text()?;
-                Ok(serde_json::from_str(&response)?)
-            };
+            let client = reqwest::blocking::Client::builder()
+                .user_agent(user_agent)
+                .build()?;
+            let response = client
+                .post(url)
+                .form(&HashMap::from([
+                    ("grant_type", "authorization_code"),
+                    ("client_id", client_id),
+                    ("client_secret", client_secret),
+                    ("code", authorization_code),
+                    ("redirect_uri", REDIRECT_URI),
+                ]))
+                .send()?
+                .text()?;
+            Ok(serde_json::from_str(&response)?)
+        };
 
         let response = create_app()?;
 
-        let client_id = response.client_id;
-        let client_secret = response.client_secret;
+        let client_id = response
+            .application
+            .client_id
+            .ok_or(MastodonClientError::MissingField("client_id".into()))?;
+        let client_secret = response
+            .application
+            .client_secret
+            .ok_or(MastodonClientError::MissingField("client_id".into()))?;
 
         let login_url = get_login_url(&client_id);
         let authorization_code = get_authorization_code_callback(login_url.as_str())?;
@@ -178,6 +183,8 @@ pub enum MastodonClientError {
     IO(#[from] serde_json::Error),
     #[error("failed getting authorization code: {0}")]
     AuthorizationCode(String),
+    #[error("missing field: {0}")]
+    MissingField(String),
 }
 
 #[cfg(test)]
