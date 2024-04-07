@@ -40,6 +40,20 @@ impl MastodonClient {
         }
     }
 
+    pub fn favourite(&self, id: &str) -> Result<protocol::Status, MastodonClientError> {
+        let client = reqwest::blocking::Client::builder()
+            .user_agent(&self.user_agent)
+            .build()?;
+
+        let response = client
+            .post(format!(r"{}/api/v1/statuses/{id}/favourite", self.base_url))
+            .bearer_auth(&self.access_token)
+            .send()?
+            .text()?;
+
+        Ok(serde_json::from_str(&response)?)
+    }
+
     pub fn authorize(
         &mut self,
         cached_access_token: Option<impl Into<String>>,
